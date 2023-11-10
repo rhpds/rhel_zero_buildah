@@ -9,93 +9,90 @@ Inspect the images available on the host using `+podman images+`
 podman images
 ----
 
-REPOSITORY TAG IMAGE ID CREATED SIZE localhost/el-httpd2 latest
-076c3116b4c1 40 seconds ago 299 MB localhost/el-httpd1 latest
-c08e21fe69a5 16 minutes ago 299 MB
-registry.access.redhat.com/ubi9/ubi-init latest 849d803e50eb 32 hours
-ago 247 MB
-
+....
+REPOSITORY                                TAG         IMAGE ID      CREATED         SIZE
+localhost/el-httpd2                       latest      076c3116b4c1  40 seconds ago  299 MB
+localhost/el-httpd1                       latest      c08e21fe69a5  16 minutes ago  299 MB
+registry.access.redhat.com/ubi9/ubi-init  latest      849d803e50eb  32 hours ago    247 MB
 ....
 
-Note the name matches what was set using `buildah commit`.
+Note the name matches what was set using `+buildah commit+`.
 
-`Podman` and `buildah` use the same storage locations on the host, which lets us immediately run the image we just built via `podman`.
+`+Podman+` and `+buildah+` use the same storage locations on the host,
+which lets us immediately run the image we just built via `+podman+`.
 
-```bash
+[source,bash]
+----
 podman run -d -p 80:80 el-httpd2
-....
+----
 
+....
 561019c2a69fd3826bcaf4a62240ba2b5edd542e664bd2fee0381da746d58d95
-
 ....
 
-Check the status of the application container using `podman`.
+Check the status of the application container using `+podman+`.
 
-```bash
+[source,bash]
+----
 podman ps
-....
-
-CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 2a1cd10a719a
-localhost/el-httpd2:latest /usr/sbin/init 8 seconds ago Up 8 seconds ago
-0.0.0.0:80->80/tcp youthful_hertz
+----
 
 ....
+CONTAINER ID  IMAGE                       COMMAND         CREATED        STATUS            PORTS               NAMES
+2a1cd10a719a  localhost/el-httpd2:latest  /usr/sbin/init  8 seconds ago  Up 8 seconds ago  0.0.0.0:80->80/tcp  youthful_hertz
+....
 
-Note the ports and command match the metadata set using `buildah config`.
+Note the ports and command match the metadata set using
+`+buildah config+`.
 
-Inspect the image metadata for the application container using `buildah inspect`.
+Inspect the image metadata for the application container using
+`+buildah inspect+`.
 
-```bash
+[source,bash]
+----
 buildah inspect localhost/el-httpd2 | grep -A 8 rootfs
-....
-
-[cols=">",]
-|===
-|"`rootfs`": \{
-
-|"`type`": "`layers`",
-
-|"`diff_ids`": [
-
-|"`sha256:89cadc3789b9f5ab3768f50d578a389e2719cf9981b585e70ca409b8b143defc`"
-
-|]
-
-|},
-
-|"`history`": [
-
-|\{
-
-|"`created`": "`2022-06-15T15:55:04.662511309Z`",
-|===
+----
 
 ....
-    "rootfs": {
-        "type": "layers",
-        "diff_ids": [
-            "sha256:89cadc3789b9f5ab3768f50d578a389e2719cf9981b585e70ca409b8b143defc"
-        ]
-    },
-    "history": [
-        {
-            "created": "2022-06-15T15:55:04.662511309Z",
+--
+        "rootfs": {
+            "type": "layers",
+            "diff_ids": [
+                "sha256:89cadc3789b9f5ab3768f50d578a389e2719cf9981b585e70ca409b8b143defc"
+            ]
+        },
+        "history": [
+            {
+                "created": "2022-06-15T15:55:04.662511309Z",
+--
+        "rootfs": {
+            "type": "layers",
+            "diff_ids": [
+                "sha256:89cadc3789b9f5ab3768f50d578a389e2719cf9981b585e70ca409b8b143defc"
+            ]
+        },
+        "history": [
+            {
+                "created": "2022-06-15T15:55:04.662511309Z",
 ....
 
-....
+Look for the `+rootfs+` section in the JSON output. You will see the
+single layer created by the `+buildah commit+` subcommand.
 
-Look for the `rootfs` section in the JSON output. You will see the single layer created by the `buildah commit` subcommand.
+Run the following `+curl+` command to check that the container is
+serving a web page.
 
-Run the following `curl` command to check that the container is serving a web page.
-
-```bash
+[source,bash]
+----
 curl localhost:80
+----
+
 ....
-
 <!DOCTYPE html>
-
-Welcome to a container!
-
-You’ve deployed your new web application into a container from scratch!
-
-```
+<head>
+  <title>Welcome to a container!</title>
+</head>
+<body>
+<h1>You've deployed your new web application into a container from scratch!</h1>
+</body>
+....
