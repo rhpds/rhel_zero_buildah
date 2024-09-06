@@ -14,19 +14,17 @@ packages. More information on UBI can be found in the
 https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image[introductory
 blog post.]
 
-To build an application container from the `+ubi-init+` base image, we
-will create a working container with `+buildah+`. A working container is
-a temporary container used as the target for buildah commands.
+To build an application container from the `ubi-init` base image, we
+will create a working container with `buildah`. A working container is a
+temporary container used as the target for buildah commands.
 
 [source,bash]
 ----
 buildah from registry.access.redhat.com/ubi9/ubi-init
 ----
 
-ubi-init-working-container ```
-
 This subcommand acts like the FROM directive in a Containerfile and
 makes the source image available on the host.
 
-Buildah will append `+-working-container+` to the image name used. If
-that name already exists, a number will also be appended.
+Buildah will append `-working-container` to the image name used. If that
+name already exists, a number will also be appended.
